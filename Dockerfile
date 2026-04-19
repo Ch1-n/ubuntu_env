@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     tar \
     git \
     vim \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 # 设置工作目录
@@ -39,25 +40,42 @@ RUN tar -xzf systemc-3.0.2.tar.gz && \
     make install && \
     cd /tmp && rm -rf systemc-3.0.2 systemc-3.0.2.tar.gz
 
-# 2. 安装 CCI 1.0.2（终极修复版）
+# 2. 安装 CCI 1.0.2
 COPY lib/cci_v1.0.2.tar.gz /tmp/
 RUN tar -xzf cci_v1.0.2.tar.gz && \
     cd cci_v1.0.2 && \
     mkdir build && cd build && \
     cmake .. \
     -DSYSTEMC_HOME=/opt/systemc \
-    -DCMAKE_INSTALL_PREFIX=/opt/systemc \
+    -DCMAKE_INSTALL_PREFIX=/opt/cci \
     -DCMAKE_PREFIX_PATH=/opt/systemc \
     -DSYSTEMC_INCLUDE_DIR=/opt/systemc/include \
     -DSYSTEMC_LIBRARY=/opt/systemc/lib-linux64/libsystemc.so \
     && make -j$(nproc) && make install && \
     cd /tmp && rm -rf cci_v1.0.2 cci_v1.0.2.tar.gz
 
+# 3. 安装 fmt → /opt/fmt 【我帮你加好了】
+COPY lib/fmt-master.zip /tmp/
+RUN unzip fmt-master.zip && \
+    cd fmt-master && \
+    mkdir build && cd build && \
+    cmake .. \
+    -DCMAKE_INSTALL_PREFIX=/opt/fmt \
+    -DFMT_TEST=OFF \
+    && make -j$(nproc) && make install && \
+    cd /tmp && rm -rf fmt-master fmt-master.zip
+
 # 设置环境变量（所有库都装在 /opt/systemc 下，共享路径）
 ENV SYSTEMC_HOME=/opt/systemc
-ENV CCI_HOME=/opt/systemc
+ENV CCI_HOME=/opt/cci
+ENV FMT_HOME=/opt/fmt
+
 ENV PATH=$SYSTEMC_HOME/bin:$PATH
-ENV LD_LIBRARY_PATH=$SYSTEMC_HOME/lib-linux64:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH=\
+$SYSTEMC_HOME/lib-linux64:\
+$CCI_HOME/lib:\
+$FMT_HOME/lib:\
+$LD_LIBRARY_PATH
 
 RUN echo 'cd() { builtin cd "$@" && ls; }' >> ~/.bashrc
 
