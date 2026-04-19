@@ -1,5 +1,5 @@
 # ubuntu_env
 ubuntu_env which can run systemc 
-mv devcontainer .devcontainer 
-mv vscode .vscode 
+1.mv devcontainer .devcontainer 
+2.mv vscode .vscode 
 
