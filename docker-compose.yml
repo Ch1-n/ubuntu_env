@@ -1,0 +1,8 @@
+services:
+  kvin_ubuntu:
+    build: .
+    container_name: kvin_ubuntu
+    volumes:
+      - ./share:/share
+    stdin_open: true
+    tty: true
