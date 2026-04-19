@@ -1,0 +1,17 @@
+{
+    "name": "kvin_env_unbuntu24",
+    "build": {
+        "dockerfile": "../Dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools",
+                "twxs.cmake"
+            ]
+        }
+    },
+    "workspaceFolder": "/",
+    "remoteUser": "root"
+}
